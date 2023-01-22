@@ -1,4 +1,4 @@
-import { Delivery } from "./delivery.js";
+import { Tour } from "./tour.js";
 
 export class Start {
   constructor() {
@@ -6,7 +6,7 @@ export class Start {
     this.middleTable = null;
     this.rightTable = null;
     this.rightTableContent = null;
-    this.selectedDelivery = null;
+    this.selectedTour = null;
   }
 
   draw(host) {
@@ -50,7 +50,7 @@ export class Start {
     host.appendChild(tableDiv);
   }
 
-  drawRightTableButtons(host, delivery_id) {
+  drawRightTableButtons(host, tour_id) {
     const buttonsDiv = document.createElement("div");
     buttonsDiv.className = "buttonsDiv";
     host.appendChild(buttonsDiv);
@@ -64,7 +64,7 @@ export class Start {
     buttonFuel.className = "rightButton";
     buttonFuel.innerHTML = "Fuel";
     buttonFuel.onclick = () => {
-      fetch(`https://localhost:5001/Deliveries/GetFuel/${delivery_id}`).then(
+      fetch(`https://localhost:44361/Tours/GetFuel/${tour_id}`).then(
         (p) => {
           p.json().then((data) => {
             host.removeChild(this.rightTableContent);
@@ -79,7 +79,7 @@ export class Start {
     buttonIdling.className = "rightButton";
     buttonIdling.innerHTML = "Idling time";
     buttonIdling.onclick = () => {
-      fetch(`https://localhost:5001/Deliveries/GetIdling/${delivery_id}`).then(
+      fetch(`https://localhost:44361/Tours/GetIdling/${tour_id}`).then(
         (p) => {
           p.json().then((data) => {
             host.removeChild(this.rightTableContent);
@@ -94,7 +94,7 @@ export class Start {
     buttonSpeed.className = "rightButton";
     buttonSpeed.innerHTML = "Speed";
     buttonSpeed.onclick = () => {
-      fetch(`https://localhost:5001/Deliveries/GetSpeed/${delivery_id}`).then(
+      fetch(`https://localhost:44361/Tours/GetSpeed/${tour_id}`).then(
         (p) => {
           p.json().then((data) => {
             host.removeChild(this.rightTableContent);
@@ -111,7 +111,7 @@ export class Start {
     buttonLocation.onclick = () => {
       let list = [];
       fetch(
-        `https://localhost:5001/Deliveries/GetLocation/${delivery_id}`
+        `https://localhost:44361/Tours/GetLocation/${tour_id}`
       ).then((p) => {
         p.json().then((data) => {
           data.forEach((element) => {
@@ -133,7 +133,7 @@ export class Start {
 
     buttonsDiv.appendChild(buttonLocation);
 
-    fetch(`https://localhost:5001/Deliveries/GetFuel/${delivery_id}`).then(
+    fetch(`https://localhost:44361/Tours/GetFuel/${tour_id}`).then(
       (p) => {
         p.json().then((data) => {
           this.drawRightTableContent(host, data, h1);
@@ -197,13 +197,13 @@ export class Start {
     host.appendChild(table);
   }
 
-  drawDeliveryHeader(table) {
+  drawTourHeader(table) {
     const header = document.createElement("tr");
     table.appendChild(header);
 
-    const cargo = document.createElement("th");
-    cargo.innerHTML = "Cargo";
-    header.appendChild(cargo);
+    const tourDescription = document.createElement("th");
+    tourDescription.innerHTML = "TourDescription";
+    header.appendChild(tourDescription);
 
     const year = document.createElement("th");
     year.innerHTML = "Year";
@@ -233,16 +233,16 @@ export class Start {
     endAddress.innerHTML = "End address";
     header.appendChild(endAddress);
 
-    const truck_id = document.createElement("th");
-    truck_id.innerHTML = "Truck";
-    header.appendChild(truck_id);
+    const bus_id = document.createElement("th");
+    bus_id.innerHTML = "Bus";
+    header.appendChild(bus_id);
   }
 
-  drawDeliveryData(table, delivery) {
-    const arrival = new Date(delivery.arrival_time);
-    const departing = new Date(delivery.departing_time);
+  drawTourData(table, tour) {
+    const arrival = new Date(tour.arrival_time);
+    const departing = new Date(tour.departing_time);
     let arrivalFormated;
-    if (delivery.arrival_time != null)
+    if (tour.arrival_time != null)
       arrivalFormated =
         arrival.getDate() +
         "-" +
@@ -278,26 +278,26 @@ export class Start {
       const sel = this.container.querySelector(".selected");
       if (sel != null) sel.classList.remove("selected");
 
-      this.selectedDelivery = delivery;
+      this.selectedTour = tour;
 
       const par = this.rightTable.parentNode;
       par.removeChild(this.rightTable);
       this.drawRightTable(par);
-      this.drawRightTableButtons(this.rightTable, delivery.delivery_id);
+      this.drawRightTableButtons(this.rightTable, tour.tour_id);
       row.classList.add("selected");
     };
     table.appendChild(row);
 
-    const cargo = document.createElement("td");
-    cargo.innerHTML = delivery.cargo;
-    row.appendChild(cargo);
+    const tourDescription = document.createElement("td");
+    tourDescription.innerHTML = tour.tourDescription;
+    row.appendChild(tourDescription);
 
     const year = document.createElement("td");
-    year.innerHTML = delivery.year;
+    year.innerHTML = tour.year;
     row.appendChild(year);
 
     const active = document.createElement("td");
-    active.innerHTML = delivery.active;
+    active.innerHTML = tour.active;
     row.appendChild(active);
 
     const departing_time = document.createElement("td");
@@ -309,20 +309,20 @@ export class Start {
     row.appendChild(arrival_time);
 
     const driver = document.createElement("td");
-    driver.innerHTML = delivery.driver;
+    driver.innerHTML = tour.driver;
     row.appendChild(driver);
 
     const startAddress = document.createElement("td");
-    startAddress.innerHTML = delivery.start_address;
+    startAddress.innerHTML = tour.start_address;
     row.appendChild(startAddress);
 
     const endAddress = document.createElement("td");
-    endAddress.innerHTML = delivery.end_address;
+    endAddress.innerHTML = tour.end_address;
     row.appendChild(endAddress);
 
-    const truck_id = document.createElement("td");
-    truck_id.innerHTML = delivery.truck_id;
-    row.appendChild(truck_id);
+    const bus_id = document.createElement("td");
+    bus_id.innerHTML = tour.bus_id;
+    row.appendChild(bus_id);
   }
 
   drawLeft(host) {
@@ -333,100 +333,107 @@ export class Start {
     const h1 = document.createElement("h1");
     h1.className = "h1";
     name.appendChild(h1);
-    h1.innerHTML = "Telematics";
+    h1.innerHTML = "Bus Tracker";
 
     const h3 = document.createElement("h3");
     h3.className = "h3";
     name.appendChild(h3);
-    h3.innerHTML = "Tracking deliveries from start to finish";
+    h3.innerHTML = "Tracking tours from start to finish";
 
     const buttonSection = document.createElement("div");
     buttonSection.className = "buttonSection";
     host.appendChild(buttonSection);
 
-    this.drawDeliveryForm(buttonSection);
+    this.drawTourForm(buttonSection);
 
-    const startDelivery = document.createElement("button");
-    startDelivery.className = "startDelivery sectionbutton";
-    buttonSection.appendChild(startDelivery);
-    startDelivery.onclick = () => {
+    const startTour = document.createElement("button");
+    startTour.className = "startTour sectionbutton";
+    buttonSection.appendChild(startTour);
+    startTour.onclick = () => {
       const input = this.container.querySelectorAll(".DFinput");
-      const truck = input[0].value;
+      const bus = input[0].value;
       const driver = input[1].value;
       const startAddress = input[2].value;
       const endAddress = input[3].value;
-      const cargo = this.container.querySelector(".startCargo").value;
-      if (truck == "" || driver == "" || startAddress == "" || endAddress == "")
+      const tourDescription = this.container.querySelector(".startTourDescription").value;
+      if (bus == "" || driver == "" || startAddress == "" || endAddress == "")
         alert("Input all values");
       else
-        fetch(`https://localhost:5001/Deliveries/CreateDelivery`, {
+        fetch(`https://localhost:44361/Tours/CreateTour`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             Driver: driver,
             Start_Address: startAddress,
             End_Address: endAddress,
-            Truck_Id: truck,
-            Cargo: cargo,
+            Bus_Id: bus,
+            Tour_Description: tourDescription,
           }),
         }).then((p) => {
           if (p.ok) {
-            alert("Delivery has started successfully!");
+            alert("Tour has started successfully!");
           }
-        });
+          else{
+            console.log("error");
+            console.log("error: " + p.text());
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+        });;
     };
-    startDelivery.innerHTML = "Start delivery";
+    startTour.innerHTML = "Start tour";
 
-    this.drawShowDeliveries(buttonSection);
+    this.drawShowTours(buttonSection);
 
-    const showDelivery = document.createElement("button");
-    showDelivery.className = "showDelivery, sectionbutton";
-    buttonSection.appendChild(showDelivery);
-    showDelivery.onclick = () => {
-      this.selectedDelivery = null;
-      const cargo = this.container.querySelector(".cargoSelect").value;
+    const showTour = document.createElement("button");
+    showTour.className = "showTour, sectionbutton";
+    buttonSection.appendChild(showTour);
+    showTour.onclick = () => {
+      this.selectedTour = null;
+      const tourDescription = this.container.querySelector(".tourDescriptionSelect").value;
       const year = this.container.querySelector(".year").value;
       fetch(
-        `https://localhost:5001/Deliveries/GetDeliveries/${cargo}&${year}`
+        `https://localhost:44361/Tours/GetTours/${tourDescription}&${year}`
       ).then((p) => {
         parent = this.middleTable.parentNode;
         parent.removeChild(this.middleTable);
         this.drawMiddle(parent);
-        this.drawDeliveryHeader(this.middleTable);
+        this.drawTourHeader(this.middleTable);
 
         const parent2 = this.rightTable.parentNode;
         parent2.removeChild(this.rightTable);
         this.drawRightTable(parent2);
 
-        p.json().then((deliveries) => {
-          deliveries.forEach((delivery) => {
-            const del = new Delivery(
-              delivery[0],
-              delivery[1],
-              delivery[4],
-              delivery[2],
-              delivery[3],
-              delivery[5],
-              delivery[6],
-              delivery[7],
-              delivery[8],
-              delivery[9]
+        p.json().then((tours) => {
+          tours.forEach((tour) => {
+            const del = new Tour(
+              tour[0],
+              tour[1],
+              tour[4],
+              tour[2],
+              tour[3],
+              tour[5],
+              tour[6],
+              tour[7],
+              tour[8],
+              tour[9]
             );
 
-            this.drawDeliveryData(this.middleTable, del);
+            this.drawTourData(this.middleTable, del);
           });
         });
       });
     };
-    showDelivery.innerHTML = "Show deliveries";
+    showTour.innerHTML = "Show tours";
   }
 
-  drawDeliveryForm(host) {
+  drawTourForm(host) {
     const DF = document.createElement("div");
     DF.className = "DF";
     host.appendChild(DF);
 
-    this.drawDFormElement(DF, "Truck number: ", "number", "TruckID");
+    this.drawDFormElement(DF, "Bus number: ", "number", "BusID");
     this.drawDFormElement(DF, "Driver: ", "text", "Driver");
     this.drawDFormElement(DF, "Start Address: ", "text", "StartAddres");
     this.drawDFormElement(DF, "End Address: ", "text", "EndAddress");
@@ -435,7 +442,7 @@ export class Start {
     cri.className = "elContainer";
     DF.appendChild(cri);
 
-    const cargo = [
+    const tourDescription = [
       "Iron ore",
       "Coal",
       "Cereal",
@@ -443,20 +450,20 @@ export class Start {
       "Aluminum",
       "Copper ore",
     ];
-    let cargoSelect = document.createElement("select");
-    cargoSelect.className = "select cargoStart startCargo";
+    let tourDescriptionSelect = document.createElement("select");
+    tourDescriptionSelect.className = "select tourDescriptionStart startTourDescription";
     const lbl = document.createElement("label");
-    lbl.innerHTML = "Cargo: ";
+    lbl.innerHTML = "TourDescription: ";
     cri.appendChild(lbl);
 
-    for (let i = 0; i < cargo.length; i++) {
+    for (let i = 0; i < tourDescription.length; i++) {
       const c = document.createElement("option");
-      c.value = cargo[i];
-      c.innerHTML = cargo[i];
-      cargoSelect.appendChild(c);
+      c.value = tourDescription[i];
+      c.innerHTML = tourDescription[i];
+      tourDescriptionSelect.appendChild(c);
     }
 
-    cri.appendChild(cargoSelect);
+    cri.appendChild(tourDescriptionSelect);
   }
 
   drawDFormElement(host, lblText, tip, className) {
@@ -474,12 +481,12 @@ export class Start {
     elContainer.appendChild(el);
   }
 
-  drawShowDeliveries(host) {
+  drawShowTours(host) {
     const cri = document.createElement("div");
     cri.className = "cri";
     host.appendChild(cri);
 
-    const cargo = [
+    const tourDescription = [
       "Iron ore",
       "Coal",
       "Cereal",
@@ -487,20 +494,20 @@ export class Start {
       "Aluminum",
       "Copper ore",
     ];
-    let cargoSelect = document.createElement("select");
-    cargoSelect.className = "select cargoSelect";
+    let tourDescriptionSelect = document.createElement("select");
+    tourDescriptionSelect.className = "select tourDescriptionSelect";
     const lbl = document.createElement("label");
-    lbl.innerHTML = "Cargo: ";
+    lbl.innerHTML = "TourDescription: ";
     cri.appendChild(lbl);
 
-    for (let i = 0; i < cargo.length; i++) {
+    for (let i = 0; i < tourDescription.length; i++) {
       const c = document.createElement("option");
-      c.value = cargo[i];
-      c.innerHTML = cargo[i];
-      cargoSelect.appendChild(c);
+      c.value = tourDescription[i];
+      c.innerHTML = tourDescription[i];
+      tourDescriptionSelect.appendChild(c);
     }
 
-    cri.appendChild(cargoSelect);
+    cri.appendChild(tourDescriptionSelect);
 
     const y = document.createElement("div");
     y.className = "cri";
